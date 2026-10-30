@@ -1,4 +1,6 @@
-# Technical Approach Report: SkillBridge
+# Technical Approach Report: SkillBridge and ProofKit
+
+Sections 1-9 cover **SkillBridge** (the Cynbit Studio product demo). Section 10 covers **ProofKit** (the claim auditor and case-study drafter that back up the website's claims).
 
 ## 1. Problem
 
@@ -106,9 +108,67 @@ Operational notes: the current engine runs in milliseconds on CPU, so cost is do
 
 ```bash
 pip install -r requirements.txt
-python -m pytest -q                      # 12 tests
+python -m pytest -q                      # 30 tests
 python -m skillbridge.evaluate           # ablation table
 streamlit run app.py                     # UI
 python -m skillbridge.cli resume.txt     # CLI
 export ANTHROPIC_API_KEY=...             # optional LLM explanation
 ```
+
+The Streamlit app is multi-page: `app.py` is the SkillBridge demo, and `pages/` holds Claim Audit and Case Study Drafter.
+
+## 10. ProofKit
+
+### 10.1 Problem
+
+The website's offer is clear but its evidence is thin: headline numbers have no period, baseline or source, and there are no case-study write-ups. ProofKit has two parts: (a) find claims a reader cannot verify and say what to add; (b) draft case studies from structured client evidence without ever publishing a number that lacks backing.
+
+### 10.2 Claim auditor (`proofkit/claims.py`)
+
+```
+text or claim list --> detect claim types --> check context --> issues --> severity --> fix suggestion
+```
+
+| Step | Detail |
+|---|---|
+| Detect | Regexes for percentages, multipliers (3x), counts (50k+, 1000+), always-on promises (24/7), the absolute "100%", and a short list of vague superlatives ("revolutionary", "premier", "globally recognized"). |
+| Check | For measured claims: is there a time period, a baseline ("from", "vs", "compared to") and a source ("source", "according to", "audited", a URL)? For 24/7 claims: is coverage defined (channels, response time)? Structured fields (source, period, baseline) can be supplied alongside the text. |
+| Severity | High: absolute claim or three missing items. Medium: two. Low: one. OK: none. |
+| Output | Findings sorted by severity, each with the reasons and a plain-language suggestion. Exportable as CSV from the page. |
+
+Design choice: rules rather than an LLM, because the check is a definable list of properties, results must be explainable line by line, and the auditor must never say a claim is false. It only reports that the page does not let a reader check it.
+
+**Result on real input:** 13 claims taken from the homepage and Our Story pages produced 9 high, 1 medium, 3 low and 0 fully supported.
+
+### 10.3 Case-study drafter (`proofkit/casestudy.py`)
+
+Input is structured evidence: client, industry, problem, solution, services, an optional quote with a consent flag, and metrics. Each metric has value, baseline, unit, time period, source and a verified flag.
+
+- **Gate.** A metric is published only if baseline, period, source and verification are all present. Others are held back.
+- **Computed change.** The percentage change is calculated from baseline and value, never typed in by hand, so the numbers in the text always agree.
+- **Quotes.** Included only when consent is true.
+- **Empty results.** If nothing passes the gate, the Results section says "No verified metrics yet" rather than filling the space.
+- **Client request.** For every held-back metric, the tool lists exactly what to ask the client (baseline, period, source, confirmation), and asks for quote permission if missing.
+- **Draft notice.** Every draft ends by stating that client approval is required.
+
+### 10.4 LLM wording pass and its guardrail
+
+The optional LLM step receives the finished draft and may only improve flow and tone (system prompt in `casestudy.py`). A guardrail compares the set of numbers in the original and the edit; if any number is added, changed or removed, the edit is discarded and the original is returned, and the page shows why. This is the automated check that SkillBridge's explanation step still lacks (section 5), and a good candidate to port back.
+
+### 10.5 Testing and limits
+
+18 tests cover: bare claims flagged for all three gaps; a well-supported claim passing; absolute and vague claims; the 24/7 case; structured context; multi-line page audit and ordering; the metric gate; computed percentage change including zero and text baselines; unverified metrics hidden or labelled; quote consent; no invented results; the evidence request; the number guardrail; and the no-API-key path. The three Streamlit pages were also exercised headlessly, including invalid JSON input.
+
+Limits to be aware of:
+
+- Regex context checks are per sentence and English only. A claim whose source is on another page will be over-flagged; a claim containing words like "from" in another sense can be under-flagged. Output is a review list, not a verdict.
+- No labelled accuracy evaluation of the auditor exists yet. Next step is to hand-label 100+ claims from several sites and report precision and recall.
+- The sample client and all its numbers are fictional. Nothing in the drafter is based on a real Cynbit client.
+- The LLM pass preserves numbers but cannot check that its wording stays faithful in meaning; a human reviews every draft.
+
+### 10.6 Next steps
+
+1. Crawl the whole site from its sitemap and audit every page, tracking the share of claims with period, baseline and source over time.
+2. Pull evidence directly from client analytics exports (CSV upload first, connectors later) so metrics arrive with their source attached.
+3. Add an LLM-assisted classifier for ambiguous claims, evaluated against the hand-labelled set before it is allowed to change any severity.
+4. Add approval workflow: client sign-off link, version history, and publishing only after sign-off.

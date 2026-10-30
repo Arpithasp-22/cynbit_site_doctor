@@ -1,0 +1,18 @@
+{
+  "_note": "Claims as they appeared in a text read of cynbit.in (homepage and Our Story page) on 30 Oct 2026. Short paraphrases, not full copy. Being flagged here means the page gives no period, baseline or source for the claim. It does NOT mean the claim is false.",
+  "claims": [
+    {"id": "h1", "text": "40% increase in organic leads", "client": "Marketing Addict (testimonial)"},
+    {"id": "h2", "text": "50k+ users handled without latency", "client": "Evento (testimonial)"},
+    {"id": "h3", "text": "99.9% uptime", "client": "Urban Wardrobe (testimonial)"},
+    {"id": "h4", "text": "100% success", "client": "Cloudy Tales (testimonial)"},
+    {"id": "h5", "text": "98% client retention", "client": null},
+    {"id": "h6", "text": "3x ROI uplift", "client": null},
+    {"id": "h7", "text": "24/7 support", "client": null},
+    {"id": "h8", "text": "1000+ certified architects", "client": null},
+    {"id": "h9", "text": "25k+ newsletter subscribers", "client": null},
+    {"id": "h10", "text": "Automation 95% efficiency (hero widget)", "client": null},
+    {"id": "s1", "text": "99.9% uptime achieved in 2022 during stress testing with enterprise partners", "client": null},
+    {"id": "v1", "text": "A revolutionary approach to digital architecture", "client": null},
+    {"id": "v2", "text": "A premier, globally recognized software solutions company", "client": null}
+  ]
+}

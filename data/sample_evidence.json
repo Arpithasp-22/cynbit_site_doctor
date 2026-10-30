@@ -1,0 +1,19 @@
+{
+  "_note": "FICTIONAL client and numbers, used only to demonstrate the drafter. Not a Cynbit client.",
+  "evidence": [
+    {
+      "client": "Example Retail Co (fictional)",
+      "industry": "Online retail",
+      "problem": "Organic search traffic was flat and the site loaded slowly on mobile.",
+      "solution": "Technical SEO audit, page-speed fixes and a rebuilt category-page template.",
+      "services": ["Technical SEO", "Web development"],
+      "quote": {"text": "The team explained every change and the reports were easy to follow.", "person": "A. Sharma", "role": "Head of E-commerce", "consent": true},
+      "metrics": [
+        {"name": "Organic leads", "value": 140, "baseline": 100, "unit": "leads/month", "timeframe": "Jan to Jun 2025", "source": "Client Google Analytics export", "verified": true},
+        {"name": "Mobile page load time", "value": 2.1, "baseline": 4.3, "unit": "seconds", "timeframe": "30-day average before vs after launch", "source": "Lighthouse reports, shared with client", "verified": true},
+        {"name": "Uptime", "value": 99.9, "baseline": null, "unit": "%", "timeframe": null, "source": null, "verified": false},
+        {"name": "Customer satisfaction", "value": "100%", "baseline": null, "unit": "", "timeframe": null, "source": null, "verified": false}
+      ]
+    }
+  ]
+}

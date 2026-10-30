@@ -1,0 +1,25 @@
+{
+  "_note": "ILLUSTRATIVE catalogue. Tracks mirror the training areas Cynbit lists publicly for BitElevate (full-stack development, AI, data science, cloud, cybersecurity, digital marketing). Module names, hours and skill mappings are invented for this prototype; replace with the real catalogue.",
+  "courses": [
+    {"id": "web-foundations", "title": "Web Foundations: HTML, CSS, Git", "track": "Full-Stack Development", "level": 1, "hours": 20, "skills": ["html", "css", "git"]},
+    {"id": "js-core", "title": "Modern JavaScript and TypeScript", "track": "Full-Stack Development", "level": 2, "hours": 30, "skills": ["javascript", "typescript"]},
+    {"id": "react-ui", "title": "Building UIs with React", "track": "Full-Stack Development", "level": 3, "hours": 30, "skills": ["react", "rest apis"]},
+    {"id": "node-backend", "title": "Node.js, Databases and APIs", "track": "Full-Stack Development", "level": 3, "hours": 35, "skills": ["node.js", "sql", "mongodb", "rest apis"]},
+    {"id": "python-core", "title": "Python for Engineers", "track": "AI & Data Science", "level": 1, "hours": 25, "skills": ["python", "numpy", "pandas"]},
+    {"id": "stats-ds", "title": "Statistics and Data Analysis", "track": "AI & Data Science", "level": 2, "hours": 30, "skills": ["statistics", "data analysis", "data visualization", "excel"]},
+    {"id": "sql-analytics", "title": "SQL for Analytics", "track": "AI & Data Science", "level": 2, "hours": 20, "skills": ["sql", "data analysis"]},
+    {"id": "ml-core", "title": "Applied Machine Learning", "track": "AI & Data Science", "level": 3, "hours": 40, "skills": ["machine learning", "statistics"]},
+    {"id": "deep-learning", "title": "Deep Learning with PyTorch", "track": "AI & Data Science", "level": 4, "hours": 40, "skills": ["deep learning", "pytorch", "tensorflow", "nlp"]},
+    {"id": "llm-apps", "title": "LLM Applications: Prompting, RAG, Agents", "track": "AI & Data Science", "level": 4, "hours": 35, "skills": ["llms", "prompt engineering", "rag", "workflow automation"]},
+    {"id": "mlops", "title": "Shipping ML: APIs, Docker, Monitoring", "track": "AI & Data Science", "level": 4, "hours": 25, "skills": ["mlops", "fastapi", "docker", "streamlit"]},
+    {"id": "backend-python", "title": "Backend with Python (Flask, Django, FastAPI)", "track": "Full-Stack Development", "level": 3, "hours": 35, "skills": ["flask", "django", "fastapi", "rest apis", "redis"]},
+    {"id": "linux-cloud", "title": "Linux and Cloud Fundamentals (AWS)", "track": "Cloud Computing", "level": 2, "hours": 30, "skills": ["linux", "aws", "azure", "gcp"]},
+    {"id": "devops", "title": "Docker, Kubernetes and CI/CD", "track": "Cloud Computing", "level": 3, "hours": 35, "skills": ["docker", "kubernetes", "ci/cd", "terraform"]},
+    {"id": "sec-fund", "title": "Cybersecurity Fundamentals", "track": "Cybersecurity", "level": 2, "hours": 30, "skills": ["cybersecurity", "cryptography", "linux"]},
+    {"id": "pentest", "title": "Ethical Hacking and Penetration Testing", "track": "Cybersecurity", "level": 3, "hours": 35, "skills": ["penetration testing", "cybersecurity"]},
+    {"id": "seo-content", "title": "SEO and Content Marketing", "track": "Digital Marketing", "level": 1, "hours": 20, "skills": ["seo", "content marketing", "copywriting"]},
+    {"id": "growth", "title": "Social, Email and Analytics", "track": "Digital Marketing", "level": 2, "hours": 25, "skills": ["social media marketing", "email marketing", "google analytics"]},
+    {"id": "qa-auto", "title": "Test Automation and Agile Delivery", "track": "Full-Stack Development", "level": 3, "hours": 25, "skills": ["testing", "agile", "ci/cd"]},
+    {"id": "mobile", "title": "Mobile Development: Flutter and React Native", "track": "Full-Stack Development", "level": 3, "hours": 40, "skills": ["flutter", "react native", "android"]}
+  ]
+}

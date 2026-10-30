@@ -1,0 +1,86 @@
+[
+  {
+    "id": "fullstack",
+    "title": "Full-Stack Developer",
+    "description": "Build and ship web applications end to end: responsive front ends, backend services, databases and deployments.",
+    "required": {"javascript": 3, "react": 3, "node.js": 2, "sql": 2, "rest apis": 2, "git": 1, "html": 1, "css": 1},
+    "nice_to_have": ["typescript", "docker", "mongodb", "aws", "testing"]
+  },
+  {
+    "id": "frontend",
+    "title": "Frontend Developer",
+    "description": "Create accessible, fast user interfaces and design systems for web products.",
+    "required": {"javascript": 3, "react": 3, "html": 2, "css": 3, "git": 1, "rest apis": 1},
+    "nice_to_have": ["typescript", "testing", "agile"]
+  },
+  {
+    "id": "backend",
+    "title": "Backend Developer",
+    "description": "Design APIs, data models and services that are reliable, secure and scalable.",
+    "required": {"python": 2, "sql": 3, "rest apis": 3, "git": 1, "docker": 2, "testing": 1},
+    "nice_to_have": ["fastapi", "django", "flask", "redis", "aws", "ci/cd", "node.js"]
+  },
+  {
+    "id": "aiml",
+    "title": "AI/ML Engineer",
+    "description": "Train, evaluate and deploy machine learning and LLM-powered systems, from data pipelines to production APIs.",
+    "required": {"python": 3, "machine learning": 3, "pandas": 2, "numpy": 1, "git": 1, "statistics": 1},
+    "nice_to_have": ["deep learning", "pytorch", "tensorflow", "nlp", "llms", "rag", "mlops", "docker", "fastapi"]
+  },
+  {
+    "id": "llm_automation",
+    "title": "AI Automation Engineer",
+    "description": "Build LLM agents, retrieval pipelines and workflow automations that remove manual work for business teams.",
+    "required": {"python": 2, "llms": 3, "prompt engineering": 3, "rag": 2, "rest apis": 2, "workflow automation": 2},
+    "nice_to_have": ["fastapi", "docker", "git", "sql", "streamlit", "testing"]
+  },
+  {
+    "id": "datascientist",
+    "title": "Data Scientist",
+    "description": "Extract insight and build predictive models from messy data, and communicate the results to stakeholders.",
+    "required": {"python": 3, "statistics": 3, "machine learning": 3, "pandas": 2, "sql": 2, "data visualization": 2},
+    "nice_to_have": ["numpy", "deep learning", "nlp", "git", "mlops"]
+  },
+  {
+    "id": "dataanalyst",
+    "title": "Data Analyst",
+    "description": "Turn business data into dashboards, reports and recommendations using SQL, spreadsheets and BI tools.",
+    "required": {"sql": 3, "excel": 2, "data visualization": 3, "data analysis": 3, "statistics": 1},
+    "nice_to_have": ["python", "pandas", "google analytics", "agile"]
+  },
+  {
+    "id": "devops",
+    "title": "Cloud / DevOps Engineer",
+    "description": "Automate infrastructure, deployments and monitoring on public cloud platforms.",
+    "required": {"linux": 3, "docker": 3, "aws": 3, "ci/cd": 3, "git": 1, "kubernetes": 2},
+    "nice_to_have": ["terraform", "azure", "gcp", "python"]
+  },
+  {
+    "id": "security",
+    "title": "Cybersecurity Analyst",
+    "description": "Monitor, assess and harden systems and applications against threats.",
+    "required": {"cybersecurity": 3, "penetration testing": 3, "linux": 2, "cryptography": 1},
+    "nice_to_have": ["python", "aws", "docker", "agile"]
+  },
+  {
+    "id": "marketing",
+    "title": "Digital Marketing Executive",
+    "description": "Plan and run SEO, content, social and email campaigns and report on performance.",
+    "required": {"seo": 3, "content marketing": 2, "social media marketing": 2, "google analytics": 3, "copywriting": 1},
+    "nice_to_have": ["email marketing", "excel", "data visualization"]
+  },
+  {
+    "id": "qa",
+    "title": "QA / Test Automation Engineer",
+    "description": "Design and automate tests that catch regressions before release.",
+    "required": {"testing": 3, "python": 2, "git": 1, "ci/cd": 2, "agile": 1, "rest apis": 1},
+    "nice_to_have": ["javascript", "docker", "sql"]
+  },
+  {
+    "id": "mobile",
+    "title": "Mobile App Developer",
+    "description": "Build and publish cross-platform or native mobile applications.",
+    "required": {"flutter": 3, "react native": 2, "android": 2, "rest apis": 2, "git": 1},
+    "nice_to_have": ["javascript", "typescript", "testing", "agile"]
+  }
+]

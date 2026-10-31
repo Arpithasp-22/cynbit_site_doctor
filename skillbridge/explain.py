@@ -1,19 +1,17 @@
 """Candidate-facing explanation.
 
 Default is a deterministic template, so the prototype works offline with no API key.
-If ANTHROPIC_API_KEY is set, the same structured facts are handed to an LLM that is only
+If ANTHROPIC_API_KEY is set (via Streamlit secrets or environment), the same structured facts are handed to an LLM that is only
 allowed to rephrase them (no new skills, courses or numbers). Any failure falls back to
 the template, so the UI never breaks because of the LLM.
 """
 from __future__ import annotations
 
 import json
-import os
 
+from sitedoctor.secrets import get_secret, has_api_key, get_model
 from .matcher import RoleMatch
 from .pathway import LearningPath
-
-DEFAULT_MODEL = "claude-sonnet-5-5"  # override with CLAUDE_MODEL
 
 SYSTEM_PROMPT = (
     "You are a career coach inside a learning platform. You receive a JSON object of facts "
@@ -60,14 +58,14 @@ def template_explanation(match: RoleMatch, path: LearningPath) -> str:
 
 
 def llm_explanation(match: RoleMatch, path: LearningPath) -> str | None:
-    if not os.environ.get("ANTHROPIC_API_KEY"):
+    if not has_api_key():
         return None
     try:
         import anthropic
 
-        client = anthropic.Anthropic()
+        client = anthropic.Anthropic(api_key=get_secret("ANTHROPIC_API_KEY"))
         msg = client.messages.create(
-            model=os.environ.get("CLAUDE_MODEL", DEFAULT_MODEL),
+            model=get_model(),
             max_tokens=300,
             system=SYSTEM_PROMPT,
             messages=[{"role": "user", "content": json.dumps(facts(match, path))}],

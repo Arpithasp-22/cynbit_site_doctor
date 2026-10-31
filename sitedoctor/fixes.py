@@ -1,7 +1,6 @@
 """Turn findings into ready-to-use fixes: rewrites, checklists, evidence requests, one Fix Pack file."""
 from __future__ import annotations
 
-import os
 import re
 
 from proofkit.casestudy import numbers_preserved
@@ -10,8 +9,7 @@ from proofkit.claims import audit_page
 from .checks import OFFER_ELEMENTS, Result, _is_offer
 from .crawler import Site
 from .extract import Page
-
-DEFAULT_MODEL = "claude-sonnet-5-5"  # override with CLAUDE_MODEL
+from .secrets import get_secret, has_api_key, get_model
 
 
 def _clip(text: str, limit: int) -> str:
@@ -47,13 +45,13 @@ def suggest_meta(page: Page) -> str:
 
 def polish_meta(draft: str) -> tuple[str, str]:
     """Optional LLM rewrite. Rejected unless it keeps every number and stays within 160 characters."""
-    if not draft or not os.environ.get("ANTHROPIC_API_KEY"):
+    if not draft or not has_api_key():
         return draft, "extractive"
     try:
         import anthropic
 
-        msg = anthropic.Anthropic().messages.create(
-            model=os.environ.get("CLAUDE_MODEL", DEFAULT_MODEL), max_tokens=120,
+        msg = anthropic.Anthropic(api_key=get_secret("ANTHROPIC_API_KEY")).messages.create(
+            model=get_model(), max_tokens=120,
             system="Rewrite the text as one meta description of 120-155 characters for a web page. Use only facts in "
                    "the text. Do not add numbers, claims or superlatives. Output the description only.",
             messages=[{"role": "user", "content": draft}])

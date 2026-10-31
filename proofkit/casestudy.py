@@ -8,13 +8,13 @@ is added or removed.
 from __future__ import annotations
 
 import json
-import os
 import re
 from dataclasses import dataclass, field
 from pathlib import Path
 
+from sitedoctor.secrets import get_secret, has_api_key, get_model
+
 DATA_DIR = Path(__file__).resolve().parent.parent / "data"
-DEFAULT_MODEL = "claude-sonnet-5-5"  # override with CLAUDE_MODEL
 
 POLISH_PROMPT = (
     "You edit a draft client case study for a software company's website. Improve flow and tone "
@@ -167,13 +167,13 @@ def numbers_preserved(original: str, edited: str) -> bool:
 
 def polish(markdown: str) -> tuple[str, str]:
     """Optional LLM wording pass. Returns (text, source); falls back to the input on any problem."""
-    if not os.environ.get("ANTHROPIC_API_KEY"):
+    if not has_api_key():
         return markdown, "unchanged (no API key)"
     try:
         import anthropic
 
-        msg = anthropic.Anthropic().messages.create(
-            model=os.environ.get("CLAUDE_MODEL", DEFAULT_MODEL),
+        msg = anthropic.Anthropic(api_key=get_secret("ANTHROPIC_API_KEY")).messages.create(
+            model=get_model(),
             max_tokens=1200,
             system=POLISH_PROMPT,
             messages=[{"role": "user", "content": markdown}],

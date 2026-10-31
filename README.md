@@ -2,6 +2,8 @@
 
 Submission for the Cynbit **AI/ML Engineer Intern** assessment: *Identify an AI Opportunity for Cynbit*.
 
+> New to this? Read [docs/explainer.md](docs/explainer.md) (also the "How it works" page inside the app) for the plain-language version.
+
 ## In one minute
 
 **The problem.** Cynbit's website says it builds AI and software, but a buyer cannot check much of it. Numbers such as "99.9% uptime" and "3x ROI" have no period, baseline or source. The case study lists 35% ROI with no starting figure. Products have no status, price or screenshots. A reader who cannot verify a claim discounts it. In a LinkedIn study of Indian small businesses reported by Business Standard, 95% said a platform's credibility matters more than cost or convenience.

@@ -1,98 +1,96 @@
-"""Streamlit demo: streamlit run app.py"""
+"""Cynbit Site Doctor. Run: streamlit run app.py"""
 from __future__ import annotations
 
-import io
-
+import pandas as pd
 import streamlit as st
 
-from skillbridge.data import load_sample_resumes
-from skillbridge.explain import explain
-from skillbridge.extractor import extract_with_evidence
-from skillbridge.matcher import RoleMatcher
-from skillbridge.pathway import build_path
+from sitedoctor.checks import CATEGORIES, EFFORT_LABEL
+from sitedoctor.crawler import Crawler
+from sitedoctor.fixes import fix_pack_markdown
+from sitedoctor.ui import analysis, current_site, site_banner
 
-st.set_page_config(page_title="SkillBridge for Cynbit", page_icon="🌉", layout="wide")
+st.set_page_config(page_title="Cynbit Site Doctor", page_icon="🩺", layout="wide")
 
-
-@st.cache_resource
-def get_matcher() -> RoleMatcher:
-    return RoleMatcher()
-
-
-def read_upload(file) -> str:
-    if file.name.lower().endswith(".pdf"):
-        from pypdf import PdfReader
-
-        reader = PdfReader(io.BytesIO(file.read()))
-        return "\n".join(page.extract_text() or "" for page in reader.pages)
-    return file.read().decode("utf-8", errors="ignore")
-
-
-st.title("SkillBridge")
-st.caption(
-    "Prototype for Cynbit Studio / BitElevate: match a resume to roles, explain the fit, "
-    "and turn the gaps into a learning path. Roles and courses are illustrative, not Cynbit's real catalogue."
+st.title("🩺 Cynbit Site Doctor")
+st.markdown(
+    "**A website checkup for cynbit.in that tells the team exactly what to fix, in what order, and gives them the "
+    "fixes ready to use.**"
 )
 
-samples = {f"{r['id']} (expected: {r['expected_role']})": r["text"] for r in load_sample_resumes()}
-
 with st.sidebar:
-    st.header("Input")
-    choice = st.selectbox("Load a synthetic sample", ["(none)"] + list(samples))
-    upload = st.file_uploader("...or upload a resume (.txt or .pdf)", type=["txt", "pdf"])
-    top_n = st.slider("Roles to show", 1, 5, 3)
-    include_nice = st.checkbox("Include nice-to-have skills in the learning path", value=False)
-    use_llm = st.checkbox("Use LLM explanation if ANTHROPIC_API_KEY is set", value=True)
-    st.info("Do not paste real personal data into a shared deployment. Nothing is stored by this app.")
-
-default_text = samples.get(choice, "")
-if upload is not None:
-    default_text = read_upload(upload)
-
-resume = st.text_area("Resume text", value=default_text, height=220,
-                      placeholder="Paste resume text here, or pick a sample in the sidebar")
-
-if st.button("Analyse", type="primary") and resume.strip():
-    matcher = get_matcher()
-    evidence = extract_with_evidence(resume)
-    matches = matcher.rank(resume)[:top_n]
-
-    st.subheader("Detected skills")
-    if evidence:
-        st.write(", ".join(f"`{s}`" for s in sorted(evidence)))
-        with st.expander("Why were these detected? (evidence)"):
-            for skill, snippet in sorted(evidence.items()):
-                st.markdown(f"**{skill}**: ...{snippet}...")
+    st.header("Source")
+    mode = st.radio("What should I check?", ["Saved snapshot of cynbit.in", "Scan a live website"])
+    if mode == "Scan a live website":
+        url = st.text_input("Website address", "https://www.cynbit.in")
+        pages = st.slider("Maximum pages to read", 5, 40, 20)
+        if st.button("Scan now", type="primary"):
+            with st.spinner("Reading the site..."):
+                try:
+                    st.session_state["site"] = Crawler(url, max_pages=pages).crawl()
+                except Exception as exc:
+                    st.error(f"Could not scan that address: {exc}")
     else:
-        st.warning("No known skills detected. Try adding a skills section.")
+        st.session_state.pop("site", None)
+    st.caption("The scanner reads pages like a browser does, follows only same-site links, respects robots.txt and "
+               "never visits private addresses.")
 
-    st.subheader("Best-fit roles")
-    for rank, m in enumerate(matches, 1):
-        path = build_path(m, include_nice_to_have=include_nice)
-        with st.expander(f"#{rank}  {m.role.title}  ·  fit {m.score:.0%}", expanded=rank == 1):
-            c1, c2, c3 = st.columns(3)
-            c1.metric("Overall fit", f"{m.score:.0%}")
-            c2.metric("Skill coverage", f"{m.skill_score:.0%}")
-            c3.metric("Text similarity", f"{m.text_score:.0%}")
-            st.progress(min(1.0, m.score))
+c1, c2, c3 = st.columns(3)
+c1.markdown("### 1. Scan\nRead every page the way a visitor's browser and Google do.")
+c2.markdown("### 2. Diagnose\n23 checks across trust, content, conversion, search, accessibility and hygiene. "
+            "Every finding says **what, why, where and how to fix it**.")
+c3.markdown("### 3. Fix\nReady-to-use fixes (claim rewrites, page checklists, contact form spec) and "
+            "**Ask Cynbit**, an AI assistant that answers visitors from the site's own pages and shows what is missing.")
 
-            left, right = st.columns(2)
-            left.markdown("**Matched required skills**")
-            left.write(", ".join(sorted(m.matched_required)) or "none")
-            right.markdown("**Missing required skills**")
-            right.write(", ".join(m.missing_required) or "none")
+site = current_site()
+result, card = analysis(site)
+site_banner(site)
 
-            if path.steps:
-                st.markdown(f"**Learning path** ({path.total_hours} hours)")
-                st.table(
-                    [{"Course": s.course.title, "Track": s.course.track,
-                      "Hours": s.course.hours, "Closes": ", ".join(s.closes)} for s in path.steps]
-                )
-            if path.uncovered:
-                st.caption("Not covered by any catalogue course: " + ", ".join(path.uncovered))
+st.subheader("Scorecard")
+cols = st.columns(len(CATEGORIES) + 1)
+cols[0].metric("Overall", f"{card.overall}/100" if card.overall is not None else "n/a")
+for col, cat in zip(cols[1:], CATEGORIES):
+    v = card.by_category[cat]
+    col.metric(cat, f"{v}" if v is not None else "needs live scan")
+st.caption("A heuristic health score, not a Google ranking. Each issue subtracts points by severity and by how many "
+           "pages it affects; categories that cannot be checked from the snapshot are left blank (not scored 100), and Overall averages only the categories that were checked.")
+if result.skipped:
+    with st.expander(f"{len(result.skipped)} checks need the real page markup (run a live scan)"):
+        st.write(", ".join(result.skipped))
 
-            text, source = explain(m, path, use_llm=use_llm)
-            st.markdown(f"**Explanation** _(source: {source})_")
-            st.write(text)
-elif not resume.strip():
-    st.info("Add a resume to begin.")
+wins = card.quick_wins[:5]
+if wins:
+    st.subheader("Start here: quick wins")
+    st.caption("High or medium impact, under an hour each.")
+    for i in wins:
+        st.markdown(f"- **{i.title}**: {i.fix}")
+
+st.subheader(f"All findings ({card.counts['total']})")
+f1, f2, f3 = st.columns([2, 2, 1])
+sev = f1.multiselect("Priority", ["high", "medium", "low"], default=["high", "medium", "low"])
+cat = f2.multiselect("Area", CATEGORIES, default=CATEGORIES)
+only_quick = f3.checkbox("Quick wins only")
+shown = [i for i in result.issues if i.severity in sev and i.category in cat and (i.quick_win or not only_quick)]
+
+df = pd.DataFrame([{
+    "Priority": i.severity, "Area": i.category, "Finding": i.title, "Time to fix": EFFORT_LABEL[i.effort],
+    "Pages": len(i.pages), "How we know": {"html": "checked on HTML", "text": "checked on text",
+                                           "observed": "found by reading"}[i.source],
+    "Confidence": i.confidence} for i in shown])
+st.dataframe(df, width="stretch", hide_index=True)
+
+for i in shown:
+    with st.expander(f"[{i.severity.upper()}] {i.title}"):
+        st.markdown(f"**Why it matters.** {i.why}")
+        st.markdown(f"**How to fix it.** {i.fix}")
+        if i.pages:
+            st.markdown("**Where:** " + ", ".join(f"`{p}`" for p in i.pages[:10]))
+        if i.evidence:
+            st.markdown("**Evidence:**\n" + "\n".join(f"- {e}" for e in i.evidence[:6]))
+        st.caption(f"{i.category} | time to fix: {EFFORT_LABEL[i.effort]} | confidence: {i.confidence} | "
+                   f"{'found by a human reading the pages' if i.source == 'observed' else 'found by code'}")
+
+st.divider()
+d1, d2 = st.columns(2)
+d1.download_button("Download the Fix Pack (.md)", fix_pack_markdown(site, result), "cynbit_fix_pack.md", "text/markdown")
+d2.download_button("Download findings (.csv)", df.to_csv(index=False), "cynbit_findings.csv", "text/csv")
+st.caption("Next: open **Fix Pack** and **Ask Cynbit** in the sidebar.")
